@@ -7,9 +7,9 @@ const props = defineProps({
   stage: { type: Object, required: true },
 })
 
-const { next, canResume, resume, restartTour, resetAll } = useStage()
+const { next, resetAll } = useStage()
 
-// intro 占位：3s 后自动进入 home（Phase 3 换成真实动画的完成回调）
+// intro 占位：3s 后自动进入下一站（现由 Intro3d 实装，此为注册表回落兜底）
 let timer = null
 onMounted(() => {
   if (props.stage.id === 'intro3d') {
@@ -37,17 +37,7 @@ const made = readKey('made', '') === '1'
       <button class="tm-btn tm-btn--primary" @click="next">跳过开场</button>
     </template>
 
-    <!-- 1 · home：开始 / 断点续玩 -->
-    <template v-else-if="stage.id === 'home'">
-      <p class="ph__hint">中秋夜，骑上车，带你把杭州的月亮看个遍</p>
-      <div class="ph__cta" v-if="canResume">
-        <button class="tm-btn tm-btn--primary" @click="resume">继续上次</button>
-        <button class="tm-btn tm-btn--ghost" @click="restartTour">重新开始</button>
-      </div>
-      <button v-else class="tm-btn tm-btn--primary" @click="next">开始夜游</button>
-    </template>
-
-    <!-- 13 · credits：署名 + 重置 -->
+    <!-- 11 · credits：署名 + 重置 -->
     <template v-else-if="stage.id === 'credits'">
       <p class="ph__hint">制作：计算机基拔尖基地班-红叶</p>
       <p class="ph__hint">资料鸣谢：杭州赏月资料 · 高陵花灯纸扎技艺 · 霞鹜文楷</p>
@@ -60,7 +50,7 @@ const made = readKey('made', '') === '1'
       存档：{{ nickname || '（未填昵称）' }} · {{ blessing || '（未填祝福）' }}
     </p>
 
-    <p v-if="!['intro3d', 'home', 'credits'].includes(stage.id)" class="ph__hint">
+    <p v-if="!['intro3d', 'credits'].includes(stage.id)" class="ph__hint">
       本章节内容在 {{ stage.phase }} 实装
     </p>
   </section>

@@ -3,45 +3,53 @@ import { onMounted, onUnmounted, ref } from 'vue'
 import { useStage } from '../composables/useStage.js'
 import { createIntro } from '../three/introScene.js'
 
-const { next } = useStage()
+const { next, canResume, resume, restartTour } = useStage()
 
 const canvasRef = ref(null)
 const webglOk = ref(true)
 const titleOn = ref(false)
+const ended = ref(false)
 
-let disposeScene = null
-let finished = false
-let fallbackTimer = null
+let sceneApi = null
 
-function finish() {
-  if (finished) return
-  finished = true
-  if (disposeScene) {
-    disposeScene()
-    disposeScene = null
-  }
+// 动画结束：不自动跳转，停在当前场景并浮出结束页按钮
+function onAnimEnd() {
+  ended.value = true
+}
+
+// 结束页「开始夜游」：进 map（home 章节已并入本页）
+function startTour() {
   next()
 }
 
+// 右上角小字「跳过」：镜头直达结尾，标题与结束页同帧出现
+function skip() {
+  if (sceneApi) sceneApi.skip()
+  else {
+    titleOn.value = true
+    ended.value = true
+  }
+}
+
 onMounted(() => {
-  disposeScene = createIntro(canvasRef.value, {
-    onFinish: finish,
+  sceneApi = createIntro(canvasRef.value, {
+    onFinish: onAnimEnd,
     onTitle: () => {
       titleOn.value = true
     },
   })
-  if (!disposeScene) {
-    // WebGL 不可用：降级（Phase 3 内将替换为动态 SVG 鹈鹕骑车）
+  if (!sceneApi) {
+    // WebGL 不可用：跳过动画直接展示结束页（动态 SVG 降级后续实装）
     webglOk.value = false
-    fallbackTimer = setTimeout(finish, 3000)
+    titleOn.value = true
+    ended.value = true
   }
 })
 
 onUnmounted(() => {
-  clearTimeout(fallbackTimer)
-  if (disposeScene) {
-    disposeScene()
-    disposeScene = null
+  if (sceneApi) {
+    sceneApi.dispose()
+    sceneApi = null
   }
 })
 </script>
@@ -53,20 +61,33 @@ onUnmounted(() => {
     <!-- WebGL 降级占位（Phase 3 后续替换为动态 SVG） -->
     <div v-if="!webglOk" class="intro__fallback">
       <div class="intro__moon"></div>
-      <p>轻量模式 · 即将进入</p>
+      <p>轻量模式 · 中秋夜，骑上车，带你把杭州的月亮看个遍</p>
     </div>
 
-    <!-- 终幕：左右分割，鹈鹕居左，右半屏「游中秋」逐字显现 -->
-    <div class="intro__title" :class="{ 'intro__title--on': titleOn }" aria-hidden="true">
-      <span class="intro__divider"></span>
-      <div class="intro__chars">
-        <span style="--i: 0">游</span>
-        <span style="--i: 1">中</span>
-        <span style="--i: 2">秋</span>
+    <!-- 终幕：左右分割，鹈鹕居左，右半屏「游中秋」逐字显现；结束后浮出开始页按钮 -->
+    <div
+      class="intro__stage"
+      :class="{ 'intro__stage--on': titleOn, 'intro__stage--end': ended }"
+    >
+      <span class="intro__divider" aria-hidden="true"></span>
+      <div class="intro__side">
+        <div class="intro__chars" aria-hidden="true">
+          <span style="--i: 0">游</span>
+          <span style="--i: 1">中</span>
+          <span style="--i: 2">秋</span>
+        </div>
+        <div class="intro__cta">
+          <template v-if="canResume">
+            <button class="tm-btn tm-btn--primary" @click="resume">继续上次</button>
+            <button class="tm-btn tm-btn--ghost" @click="restartTour">重新开始</button>
+          </template>
+          <button v-else class="tm-btn tm-btn--primary" @click="startTour">开始夜游</button>
+        </div>
       </div>
     </div>
 
-    <button class="intro__skip tm-btn tm-btn--ghost" @click="finish">跳过开场</button>
+    <!-- 跳过：右上角小字，抬高避开手机状态栏 -->
+    <button v-if="!ended" class="intro__skip" @click="skip">跳过</button>
   </section>
 </template>
 
@@ -106,18 +127,28 @@ onUnmounted(() => {
   box-shadow: 0 0 48px rgb(247 217 100 / 0.5);
 }
 
+/* 右上角小字「跳过」：抬高避开手机状态栏 */
 .intro__skip {
   position: absolute;
-  right: 16px;
-  bottom: calc(16px + var(--tm-safe-bottom));
-  min-height: 38px;
-  padding: 6px 18px;
-  font-size: 13px;
-  background: rgb(18 32 61 / 0.55);
-  backdrop-filter: blur(4px);
+  right: 12px;
+  top: calc(var(--tm-safe-top) + 36px);
+  min-height: 32px;
+  padding: 6px 12px;
+  font-size: 12px;
+  letter-spacing: 2px;
+  color: var(--tm-cloud);
+  background: none;
+  border: none;
+  border-radius: var(--tm-radius-pill);
+  opacity: 0.7;
 }
 
-.intro__title {
+.intro__skip:active {
+  color: var(--tm-moon);
+  opacity: 1;
+}
+
+.intro__stage {
   position: absolute;
   inset: 0;
   pointer-events: none;
@@ -136,11 +167,15 @@ onUnmounted(() => {
   transition: transform 0.45s var(--tm-ease);
 }
 
-.intro__chars {
+/* 右半屏列：标题保持垂直居中，结束页按钮悬在其下方 */
+.intro__side {
   position: absolute;
   right: 5%;
   top: 50%;
   transform: translateY(-50%);
+}
+
+.intro__chars {
   display: flex;
   gap: clamp(6px, 2vw, 18px);
   font-family: var(--tm-font);
@@ -162,12 +197,51 @@ onUnmounted(() => {
   transition-delay: calc(0.15s + var(--i) * 0.14s);
 }
 
-.intro__title--on .intro__divider {
+/* 结束页：动画结束后自动浮现的开始按钮（首次「开始夜游」；有存档「继续上次/重新开始」） */
+.intro__cta {
+  position: absolute;
+  top: calc(100% + clamp(14px, 3vh, 28px));
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: min(46vw, 260px);
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(12px);
+  transition:
+    opacity 0.5s var(--tm-ease) 0.15s,
+    transform 0.5s var(--tm-ease) 0.15s,
+    visibility 0s linear 0.65s;
+}
+
+.intro__stage--end .intro__cta {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  pointer-events: auto;
+  transition-delay: 0.15s, 0.15s, 0s;
+}
+
+.intro__stage--on .intro__divider {
   transform: scaleY(1);
 }
 
-.intro__title--on .intro__chars span {
+.intro__stage--on .intro__chars span {
   opacity: 1;
   transform: translateY(0);
+}
+
+/* 横屏矮屏：压缩结束页按钮 */
+@media (orientation: landscape) and (max-height: 480px) {
+  .intro__cta {
+    gap: 6px;
+    width: min(40vw, 220px);
+  }
+  .intro__cta .tm-btn {
+    min-height: 32px;
+    font-size: 12px;
+  }
 }
 </style>

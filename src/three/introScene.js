@@ -20,6 +20,11 @@ const C = {
   leg: 0xe8a03c,
   eye: 0x1b1b24,
   seat: 0x141c30,
+  lake: 0x1d3a69,
+  stone: 0xc9d3e4,
+  wood: 0x6b4a2e,
+  mat: 0x8a7550,
+  glow: 0xffe9a8,
 }
 
 // 两点之间生成一根圆杆（车架 / 腿）
@@ -164,20 +169,90 @@ function buildRider() {
   return { group, wheels: [rear, front], crank, legs }
 }
 
+// 三潭印月石塔：瓶形、中空、周开五圆孔（现存塔为明天启元年补立，高 2 米许），
+// 三塔呈等边三角形立于湖面；塔内点烛、洞口蒙纸 → 暖光圆孔（资料：CCTV《三潭印月》）
+function buildPagoda(glowMat) {
+  const g = new THREE.Group()
+  const stone = new THREE.MeshLambertMaterial({ color: C.stone })
+
+  const base = new THREE.Mesh(new THREE.CylinderGeometry(0.34, 0.42, 0.24, 10), stone)
+  base.position.y = 0.1
+  const waist = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.3, 0.3, 10), stone)
+  waist.position.y = 0.37
+  const belly = new THREE.Mesh(new THREE.SphereGeometry(0.4, 14, 12), stone)
+  belly.scale.y = 0.88
+  belly.position.y = 0.86
+  g.add(base, waist, belly)
+
+  // 塔身五孔：暖光圆片（烛光透纸）
+  for (let i = 0; i < 5; i++) {
+    const a = (i / 5) * Math.PI * 2
+    const hole = new THREE.Mesh(new THREE.CircleGeometry(0.1, 12), glowMat)
+    hole.position.set(Math.sin(a) * 0.405, 0.86, Math.cos(a) * 0.405)
+    hole.rotation.y = a
+    g.add(hole)
+  }
+
+  const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.16, 0.16, 8), stone)
+  neck.position.y = 1.24
+  const cap = new THREE.Mesh(new THREE.SphereGeometry(0.16, 10, 8), stone)
+  cap.position.y = 1.36
+  const tip = new THREE.Mesh(new THREE.ConeGeometry(0.06, 0.2, 8), stone)
+  tip.position.y = 1.5
+  g.add(neck, cap, tip)
+  return g
+}
+
+// 氛围小篷船：平底翘尾船体 + 半圆竹篾篷 + 船头一盏小灯
+function buildBoat() {
+  const g = new THREE.Group()
+  const woodMat = new THREE.MeshLambertMaterial({ color: C.wood })
+
+  const hull = new THREE.Shape()
+  hull.moveTo(-0.95, 0.3)
+  hull.quadraticCurveTo(-0.9, 0.04, -0.55, 0)
+  hull.lineTo(0.55, 0)
+  hull.quadraticCurveTo(0.9, 0.04, 0.95, 0.3)
+  hull.lineTo(0.75, 0.24)
+  hull.quadraticCurveTo(0.6, 0.1, 0.35, 0.1)
+  hull.lineTo(-0.35, 0.1)
+  hull.quadraticCurveTo(-0.6, 0.1, -0.75, 0.24)
+  hull.closePath()
+  const hullGeo = new THREE.ExtrudeGeometry(hull, { depth: 0.5, bevelEnabled: false })
+  hullGeo.translate(0, 0, -0.25)
+  g.add(new THREE.Mesh(hullGeo, woodMat))
+
+  // 篷（半圆拱、开口朝下）
+  const canopy = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.36, 0.36, 1.05, 12, 1, true, 0, Math.PI),
+    new THREE.MeshLambertMaterial({ color: C.mat, side: THREE.DoubleSide })
+  )
+  canopy.rotation.z = Math.PI / 2
+  canopy.position.set(0.05, 0.14, 0)
+  g.add(canopy)
+
+  const lamp = new THREE.Mesh(new THREE.SphereGeometry(0.055, 8, 8), new THREE.MeshBasicMaterial({ color: C.glow }))
+  lamp.position.set(0.74, 0.36, 0)
+  g.add(lamp)
+  return g
+}
+
 // 缓动：慢→快→慢
 function easeInOutCubic(t) {
   return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2
 }
 
-// 时间 → 样条参数（速度编排）：
-// 0–4.2s 后方起步慢→加速→贴近侧拍时放慢；4.2–7.4s 侧面滑行加速到正前方并收住；7.4s 后保持
+// 镜头移动时长（s）：移动收尾即触发标题
+const MOVE_T = 7.4
+
+// 时间 → 样条参数（速度编排，全程连续无停留）：
+// 慢起加速 → 侧面（约 3.7s，行程中点）以最高速掠过、不停留 → 减速收在正前方；7.4s 后保持
 function pathU(elapsed) {
-  if (elapsed <= 4.2) return 0.5 * easeInOutCubic(elapsed / 4.2)
-  if (elapsed <= 7.4) return 0.5 + 0.5 * easeInOutCubic((elapsed - 4.2) / 3.2)
-  return 1
+  if (elapsed >= MOVE_T) return 1
+  return easeInOutCubic(elapsed / MOVE_T)
 }
 
-// 创建 3D 开场；返回 dispose 函数，WebGL 不可用时返回 null
+// 创建 3D 开场；返回 { skip, dispose }，WebGL 不可用时返回 null
 export function createIntro(canvas, { onFinish = () => {}, onTitle = () => {} } = {}) {
   let renderer
   try {
@@ -264,6 +339,45 @@ export function createIntro(canvas, { onFinish = () => {}, onTitle = () => {} } 
     scrollables.push({ obj: hill, speed: 1.6, span: 58 })
   }
 
+  // 三潭印月：三座石塔呈等边三角形立于湖面，旁侧泊一艘小篷船（西湖夜景氛围）
+  const pagodaGlow = new THREE.MeshBasicMaterial({ color: C.glow, transparent: true, opacity: 0.85 })
+  const TRI = [
+    [0.6, -9.6],
+    [3.6, -9.6],
+    [2.1, -12.2],
+  ]
+  TRI.forEach(([x, z], i) => {
+    const p = buildPagoda(pagodaGlow)
+    p.position.set(x, 0, z)
+    p.rotation.y = i * 0.7
+    scene.add(p)
+  })
+
+  const lake = new THREE.Mesh(new THREE.PlaneGeometry(30, 9), new THREE.MeshLambertMaterial({ color: C.lake }))
+  lake.rotation.x = -Math.PI / 2
+  lake.position.set(2.1, 0.03, -10.9)
+  scene.add(lake)
+
+  // 湖面月光碎金
+  const glintMat = new THREE.MeshBasicMaterial({ color: C.moon, transparent: true, opacity: 0.13, depthWrite: false })
+  for (const [gx, gz, gw] of [
+    [0.9, -11.9, 3.2],
+    [4.6, -9.2, 2.2],
+    [-2.2, -10.2, 1.6],
+  ]) {
+    const glint = new THREE.Mesh(new THREE.PlaneGeometry(gw, 0.09), glintMat)
+    glint.rotation.x = -Math.PI / 2
+    glint.position.set(gx, 0.04, gz)
+    scene.add(glint)
+  }
+
+  // 小篷船泊在三塔旁
+  const boat = buildBoat()
+  boat.scale.setScalar(1.15)
+  boat.position.set(5.7, 0.04, -8.5)
+  boat.rotation.y = -0.32
+  scene.add(boat)
+
   // 鹈鹕骑手
   const rider = buildRider()
   scene.add(rider.group)
@@ -320,14 +434,14 @@ export function createIntro(canvas, { onFinish = () => {}, onTitle = () => {} } 
   resize()
   window.addEventListener('resize', resize)
 
-  // 主循环：9.5s 速度编排（慢→快→侧拍放慢→前方保持）；7.4s 触发标题，9.5s 收尾
+  // 主循环：0–7.4s 连续弧线（侧面以最高速掠过、不停留）；7.4s 标题，9.5s 结束页；此后场景驻留为按钮背景
   const clock = new THREE.Clock()
   let raf = 0
   let elapsed = 0
   let done = false
   let titleFired = false
   const DURATION = 9.5
-  const TITLE_AT = 7.4
+  const TITLE_AT = MOVE_T
 
   function frame() {
     raf = requestAnimationFrame(frame)
@@ -347,6 +461,11 @@ export function createIntro(canvas, { onFinish = () => {}, onTitle = () => {} } 
     rider.legs.rotation.z = Math.sin(elapsed * 6) * 0.07
     rider.group.position.y = Math.sin(elapsed * 9) * 0.025
 
+    // 小篷船随波轻晃 + 塔孔烛光微闪
+    boat.position.y = 0.04 + Math.sin(elapsed * 1.1) * 0.028
+    boat.rotation.z = Math.sin(elapsed * 0.8) * 0.024
+    pagodaGlow.opacity = 0.7 + Math.sin(elapsed * 2.6) * 0.18
+
     const u = pathU(elapsed)
     cameraPath.getPoint(u, tmpPos)
     camera.position.copy(tmpPos)
@@ -362,22 +481,27 @@ export function createIntro(canvas, { onFinish = () => {}, onTitle = () => {} } 
 
     if (elapsed >= DURATION && !done) {
       done = true
-      cancelAnimationFrame(raf)
-      onFinish()
+      onFinish() // 结束页浮出；场景不停止，驻留为背景
     }
   }
   frame()
 
-  return function dispose() {
-    cancelAnimationFrame(raf)
-    window.removeEventListener('resize', resize)
-    scene.traverse((obj) => {
-      if (obj.geometry) obj.geometry.dispose()
-      const m = obj.material
-      if (Array.isArray(m)) m.forEach((x) => x.dispose())
-      else if (m) m.dispose()
-    })
-    renderer.dispose()
+  return {
+    // 跳过：把时间直接推到结尾 → 标题与结束页同帧出现
+    skip() {
+      if (elapsed < DURATION) elapsed = DURATION
+    },
+    dispose() {
+      cancelAnimationFrame(raf)
+      window.removeEventListener('resize', resize)
+      scene.traverse((obj) => {
+        if (obj.geometry) obj.geometry.dispose()
+        const m = obj.material
+        if (Array.isArray(m)) m.forEach((x) => x.dispose())
+        else if (m) m.dispose()
+      })
+      renderer.dispose()
+    },
   }
 }
 

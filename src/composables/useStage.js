@@ -1,19 +1,19 @@
 import { ref, computed } from 'vue'
-import { STAGES, DEFAULT_STAGE, HOME_STAGE } from '../scenes/stages.js'
+import { STAGES, DEFAULT_STAGE } from '../scenes/stages.js'
 import { readKey, writeKey, removeKey } from './useStorage.js'
 
 // 模块级单例：App 与各场景共享同一状态
 const currentId = ref(DEFAULT_STAGE)
-const resumeId = ref(null) // home 上待确认的断点章节 id
+const resumeId = ref(null) // 开场结束页上待确认的断点章节 id
 
 function indexOf(id) {
   return STAGES.findIndex((s) => s.id === id)
 }
 
-// 启动时读取断点：仅当存档在 home 之后才提示"继续上次"
+// 启动时读取断点：仅当存档在开场之后才提示"继续上次"（home 已并入开场结束页）
 ;(function init() {
   const saved = readKey('progress', null)
-  if (saved && indexOf(saved) > indexOf(HOME_STAGE)) resumeId.value = saved
+  if (saved && indexOf(saved) > 0) resumeId.value = saved
 })()
 
 function go(id) {
@@ -39,18 +39,18 @@ function resume() {
   }
 }
 
-// home「重新开始」：清断点，从路线图重走
+// 开场结束页「重新开始」：清断点，从路线图重走
 function restartTour() {
   resumeId.value = null
   removeKey('progress')
   go('map')
 }
 
-// credits「重新开始」：清断点回 home（见 PLAN.md §5 Phase 7）
+// credits「重新开始」：清断点回开场动画（home 已并入开场结束页）
 function resetAll() {
   resumeId.value = null
   removeKey('progress')
-  currentId.value = HOME_STAGE
+  currentId.value = DEFAULT_STAGE
 }
 
 export function useStage() {

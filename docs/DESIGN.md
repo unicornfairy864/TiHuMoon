@@ -32,10 +32,10 @@
 
 ## 5. 章节状态机（线性播放，无自由跳转）
 ```
-intro3d → home → map → spot1..spot6 → riddle → science → make → fly → credits
+intro3d（结束页=首页） → map → spot1..spot6 → riddle → science → make → fly → credits
 ```
 - 仅允许「下一章 / 上一章」相邻移动；首次进入按序推进
-- `tihumoon.progress` 记录当前章节 id，重开时询问「继续上次 / 重新开始」
+- `tihumoon.progress` 记录当前章节 id，重开时在开场结束页询问「继续上次 / 重新开始」
 - 章节切换过渡：淡出 300ms → 内容切换 → 淡入 300ms；3D→2D 用渐隐
 
 ## 6. 动效原则

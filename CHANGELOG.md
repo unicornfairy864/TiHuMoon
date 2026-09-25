@@ -9,9 +9,13 @@
 - `src/three/introScene.js` — Three.js 开场场景：程序化低多边形「鹈鹕骑车」+ 月亮星空 + 三层视差滚动；**9.5s 电影运镜**（CatmullRom 样条：正后方远 → 右侧贴地近 → 右前方远；速度编排 慢起→加速→侧拍放慢→滑至正面保持；7.4s 触发标题回调，注视点末段右移让鹈鹕居左半屏）
 - `src/scenes/Intro3d.vue` — 终幕标题卡：中央分割线 + 右半屏「游中秋」逐字弹出（月光黄，霞鹜文楷），WebGL 降级占位
 - `src/scenes/registry.js` — 章节 id → 场景组件注册表（未实装章节回落 StagePlaceholder）
+- 开场背景加**三潭印月**：三座瓶形石塔等边三角形布阵、周开五孔暖光烛光、湖面月光碎金 + 旁侧**小篷船**（半圆竹篷、船头小灯、随波轻晃、烛光微闪；资料源 CCTV《三潭印月》）
 - `scripts/analyze_photo.py` + `npm run photo` — 实拍照片技术体检：亮度/天空方差/EXIF/亮斑候选（疑似月亮归一化坐标），输出 JSON 供配置月亮锚点（无视觉能力的验收方案）
 
 ### Changed
+- 开场运镜改为**全程连续弧线**：删除侧拍停留（单段 easeInOutCubic 0–7.4s，约 3.7s 在侧面以最高速掠过），标题仍 7.4s 触发
+- `Intro3d.vue`：「跳过」改为**右上角小字**（`safe-top + 36px` 避开状态栏）→ 直达结尾；动画结束**不再自动跳转**，场景驻留为背景并自动浮出合并后的结束页按钮（首次「开始夜游」；有存档「继续上次 / 重新开始」）
+- 章节流程 **home 并入 intro3d 结束页**：`stages.js` 14→13 章节、移除 `HOME_STAGE`；`useStage` 断点判定改为 `indexOf > 0`，credits 重置回开场
 - `src/App.vue` — 章节渲染改走 `resolveScene()` 注册表
 - `docs/ASSETS.md` — 图片方案改为用户实拍照片（含天空处理对照表：hero/放飞天空留空无月）
 - `docs/PLAN.md` — WebGL 降级方案改为动态 SVG 鹈鹕骑车

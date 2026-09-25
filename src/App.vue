@@ -4,18 +4,7 @@ import { STAGES } from './scenes/stages.js'
 import { useStage } from './composables/useStage.js'
 import { resolveScene } from './scenes/registry.js'
 
-const {
-  currentId,
-  current,
-  currentIndex,
-  isFirst,
-  isLast,
-  progress,
-  showNav,
-  total,
-  next,
-  prev,
-} = useStage()
+const { currentId, current, currentIndex, progress, total } = useStage()
 
 const progressPercent = computed(() => `${Math.round(progress.value * 100)}%`)
 const isIntro = computed(() => currentId.value === 'intro3d')
@@ -38,12 +27,6 @@ const isIntro = computed(() => currentId.value === 'intro3d')
     <Transition name="stage" mode="out-in">
       <component :is="resolveScene(currentId)" :key="currentId" :stage="current" />
     </Transition>
-
-    <!-- 底部导航：仅相邻线性移动 -->
-    <nav v-if="showNav" class="tm-nav">
-      <button class="tm-btn tm-btn--ghost" :disabled="isFirst" @click="prev">上一站</button>
-      <button class="tm-btn tm-btn--primary" :disabled="isLast" @click="next">下一站</button>
-    </nav>
   </div>
 </template>
 
@@ -94,22 +77,6 @@ const isIntro = computed(() => currentId.value === 'intro3d')
   color: var(--tm-moon);
 }
 
-/* --- 底部导航 --- */
-.tm-nav {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  display: flex;
-  gap: 12px;
-  padding: 10px 16px calc(10px + var(--tm-safe-bottom));
-  background: linear-gradient(180deg, transparent, rgb(18 32 61 / 0.9) 40%);
-}
-
-.tm-nav .tm-btn {
-  flex: 1;
-}
-
 /* --- 横屏：压缩 --- */
 @media (orientation: landscape) and (max-height: 480px) {
   .tm-top {
@@ -117,10 +84,6 @@ const isIntro = computed(() => currentId.value === 'intro3d')
   }
   .tm-top__meta {
     margin-top: 3px;
-  }
-  .tm-nav {
-    padding-top: 6px;
-    padding-bottom: calc(6px + var(--tm-safe-bottom));
   }
 }
 </style>

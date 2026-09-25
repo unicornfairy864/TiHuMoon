@@ -205,7 +205,7 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  width: min(46vw, 260px);
+  width: 45vw; /* 占右边 50%：右缘在屏幕 95%（side right:5%），左缘正好 50% */
   pointer-events: none;
   opacity: 0;
   visibility: hidden;
@@ -237,7 +237,7 @@ onUnmounted(() => {
 @media (orientation: landscape) and (max-height: 480px) {
   .intro__cta {
     gap: 6px;
-    width: min(40vw, 220px);
+    width: 45vw;
   }
   .intro__cta .tm-btn {
     min-height: 32px;

@@ -50,6 +50,15 @@ const made = readKey('made', '') === '1'
       存档：{{ nickname || '（未填昵称）' }} · {{ blessing || '（未填祝福）' }}
     </p>
 
+    <!-- 未实装章节：占位「下一站」保持线性推进（各章实装后由页内 CTA 替代） -->
+    <button
+      v-if="!['intro3d', 'credits'].includes(stage.id)"
+      class="tm-btn tm-btn--primary"
+      @click="next"
+    >
+      下一站
+    </button>
+
     <p v-if="!['intro3d', 'credits'].includes(stage.id)" class="ph__hint">
       本章节内容在 {{ stage.phase }} 实装
     </p>

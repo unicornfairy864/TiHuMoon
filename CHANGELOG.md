@@ -2,6 +2,13 @@
 
 本项目遵循「每次对话一次提交」，版本号按阶段递增。
 
+## [未发布 · 本次]
+
+### Added
+- **BGM 播放器**：`src/composables/useBgm.js` 单例（根目录 `bgm.mp3` 循环、音量 0.7、Vite 资源导入）；App 壳**左上角圆形音符按钮**——页面加载即出现、0.5s 聚焦提示（缩放+光环，reduced-motion 关闭），禁用态反斜杠划掉音符、启用态月光黄描边发光
+- 持久化：`tihumoon.bgm.enabled`（是否启用）+ `tihumoon.bgm.time`（进度，timeupdate 每 ≥2s/pause/pagehide 回写）；刷新后恢复进度并尝试续播，被自动播放策略拦截则静默回禁用态（存档保留）
+- credits「重新开始」`resetAll` 一并调用 `resetBgmState()`：停播、进度归零、删除两个 bgm 键（suppress 屏蔽 pause 事件回写）
+
 ## [0.3.0] - 2026-09-25
 
 ### Phase 3 · 3D 开场（进行中）

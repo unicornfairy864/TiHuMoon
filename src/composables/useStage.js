@@ -1,6 +1,7 @@
 import { ref, computed } from 'vue'
 import { STAGES, DEFAULT_STAGE } from '../scenes/stages.js'
 import { readKey, writeKey, removeKey } from './useStorage.js'
+import { resetBgmState } from './useBgm.js'
 
 // 模块级单例：App 与各场景共享同一状态
 const currentId = ref(DEFAULT_STAGE)
@@ -47,9 +48,11 @@ function restartTour() {
 }
 
 // credits「重新开始」：清断点回开场动画（home 已并入开场结束页）
+// 同时一并清除 BGM 的进度与启用状态（连同重置播放位置）
 function resetAll() {
   resumeId.value = null
   removeKey('progress')
+  resetBgmState()
   currentId.value = DEFAULT_STAGE
 }
 

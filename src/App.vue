@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import { STAGES } from './scenes/stages.js'
 import { useStage } from './composables/useStage.js'
-import StagePlaceholder from './scenes/StagePlaceholder.vue'
+import { resolveScene } from './scenes/registry.js'
 
 const {
   currentId,
@@ -36,7 +36,7 @@ const isIntro = computed(() => currentId.value === 'intro3d')
 
     <!-- 章节内容：淡入淡出切换 -->
     <Transition name="stage" mode="out-in">
-      <component :is="StagePlaceholder" :key="currentId" :stage="current" />
+      <component :is="resolveScene(currentId)" :key="currentId" :stage="current" />
     </Transition>
 
     <!-- 底部导航：仅相邻线性移动 -->

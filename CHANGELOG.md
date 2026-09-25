@@ -2,6 +2,19 @@
 
 本项目遵循「每次对话一次提交」，版本号按阶段递增。
 
+## [0.3.0] - 2026-09-25
+
+### Phase 3 · 3D 开场（进行中）
+### Added
+- `src/three/introScene.js` — Three.js 开场场景：程序化低多边形「鹈鹕骑车」（车轮/曲柄/蹬腿动画）+ 月亮星空 + 虚线/灯笼杆/远山三层视差滚动，6.5s 自动过渡，竖屏自适应取景，WebGL 不可用返回 null
+- `src/scenes/Intro3d.vue` — 开场组件：跳过按钮 + WebGL 降级占位（后续替换为动态 SVG 鹈鹕骑车）
+- `src/scenes/registry.js` — 章节 id → 场景组件注册表（未实装章节回落 StagePlaceholder）
+
+### Changed
+- `src/App.vue` — 章节渲染改走 `resolveScene()` 注册表
+- `docs/ASSETS.md` — 图片方案改为用户实拍照片（含天空处理对照表：hero/放飞天空留空无月）
+- `docs/PLAN.md` — WebGL 降级方案改为动态 SVG 鹈鹕骑车
+
 ## [0.2.0] - 2026-09-25
 
 ### Phase 2 · 外壳与导航（已完成，待用户验收）

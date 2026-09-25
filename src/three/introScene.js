@@ -393,9 +393,11 @@ export function createIntro(canvas, { onFinish = () => {}, onTitle = () => {} } 
     scene.add(p)
   })
 
-  const lake = new THREE.Mesh(new THREE.PlaneGeometry(30, 12), new THREE.MeshLambertMaterial({ color: C.lake }))
+  // 湖面：椭圆（近岸 z≈-4.5 贴近公路、远岸 z≈-19.5，曲线边界收掉直线切边）
+  const lake = new THREE.Mesh(new THREE.CircleGeometry(1, 72), new THREE.MeshLambertMaterial({ color: C.lake }))
   lake.rotation.x = -Math.PI / 2
-  lake.position.set(2.1, 0.03, -14)
+  lake.scale.set(16, 7.5, 1)
+  lake.position.set(2.1, 0.03, -12)
   scene.add(lake)
 
   // 湖面月光碎金

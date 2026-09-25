@@ -1,0 +1,23 @@
+{
+  "name": "tihumoon",
+  "version": "0.1.0",
+  "private": true,
+  "description": "TiHuMoon 鹈鹕赏月 — 杭州中秋赏月指南（静态移动端 Web Demo）",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "convert": "python scripts/convert_data.py"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "three": "^0.186.1",
+    "vue": "^3.5.43"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^6.0.9",
+    "vite": "^8.3.1"
+  }
+}
+

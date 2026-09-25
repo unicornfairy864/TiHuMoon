@@ -1,0 +1,99 @@
+/* ============================================================
+ * TiHuMoon 鹈鹕赏月 — 全局样式与设计令牌
+ * 配色参考：图3 夜景色系（夜空蓝+月光黄）、图2 灯笼暖光（仅作参考，均已自定值）
+ * ============================================================ */
+
+:root {
+  /* --- 夜色主调 --- */
+  --tm-night: #2f4c86; /* 夜空蓝（主背景） */
+  --tm-night-deep: #1b2c52; /* 深夜蓝（页面底色） */
+  --tm-night-ink: #12203d; /* 最深墨蓝（底部/幕布） */
+  --tm-ink: #2b3f72; /* 深蓝文字（浅底上使用） */
+
+  /* --- 月光与点缀 --- */
+  --tm-moon: #f7d964; /* 月光黄（主强调色） */
+  --tm-moon-soft: #ffe9a8; /* 柔和月光（光晕） */
+  --tm-orange: #e8843c; /* 桂橘橙（次强调色） */
+  --tm-lantern: #f6c445; /* 灯笼暖黄 */
+  --tm-lantern-glow: #fff3cf; /* 灯芯暖白 */
+
+  /* --- 中性色 --- */
+  --tm-cream: #fbf3e0; /* 卡片米白 */
+  --tm-paper: #f4f1ea; /* 纸面白 */
+  --tm-cloud: #dfe8f5; /* 云雾浅蓝灰 */
+  --tm-fog-50: rgb(47 76 134 / 0.5);
+  --tm-fog-80: rgb(18 32 61 / 0.8);
+
+  /* --- 语义色 --- */
+  --tm-success: #7fc8a9;
+  --tm-danger: #e06a5b;
+
+  /* --- 字体（Phase 8 嵌入霞鹜文楷，先系统栈兜底） --- */
+  --tm-font: 'LXGW WenKai', '霞鹜文楷', 'LXGW WenKai Screen', 'Kaiti SC', 'STKaiti',
+    'KaiTi', 'Noto Serif SC', serif;
+  --tm-font-ui: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'HarmonyOS Sans SC',
+    'Microsoft YaHei', 'Segoe UI', sans-serif;
+
+  /* --- 圆角 / 阴影 --- */
+  --tm-radius-s: 8px;
+  --tm-radius-m: 14px;
+  --tm-radius-l: 22px;
+  --tm-radius-pill: 999px;
+  --tm-shadow-card: 0 8px 24px rgb(10 20 45 / 0.35);
+  --tm-shadow-float: 0 12px 32px rgb(10 20 45 / 0.45);
+
+  /* --- 安全区（刘海屏/手势条） --- */
+  --tm-safe-top: env(safe-area-inset-top, 0px);
+  --tm-safe-bottom: env(safe-area-inset-bottom, 0px);
+
+  /* --- 节奏 --- */
+  --tm-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+body {
+  background: var(--tm-night-ink);
+  color: var(--tm-cream);
+  font-family: var(--tm-font);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
+}
+
+#app {
+  min-height: 100dvh;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

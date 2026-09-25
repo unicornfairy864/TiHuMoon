@@ -88,6 +88,60 @@ button {
   cursor: pointer;
 }
 
+/* --- 通用按钮（外壳导航 / 各章节 CTA 共用） --- */
+.tm-btn {
+  min-height: 44px;
+  padding: 10px 22px;
+  border: none;
+  border-radius: var(--tm-radius-pill);
+  font-size: 16px;
+  letter-spacing: 2px;
+  transition:
+    transform 0.15s var(--tm-ease),
+    opacity 0.2s,
+    box-shadow 0.2s;
+}
+
+.tm-btn:active {
+  transform: scale(0.97);
+}
+
+.tm-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.tm-btn--primary {
+  background: linear-gradient(135deg, var(--tm-moon), var(--tm-lantern));
+  color: #4a3200;
+  font-weight: 700;
+  box-shadow: 0 6px 18px rgb(247 217 100 / 0.28);
+}
+
+.tm-btn--ghost {
+  background: transparent;
+  color: var(--tm-cloud);
+  border: 1px solid rgb(223 232 245 / 0.4);
+}
+
+/* --- 章节切换动画（Transition name="stage"） --- */
+.stage-enter-active,
+.stage-leave-active {
+  transition:
+    opacity 0.28s var(--tm-ease),
+    transform 0.28s var(--tm-ease);
+}
+
+.stage-enter-from {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.stage-leave-to {
+  opacity: 0;
+  transform: translateY(-6px);
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

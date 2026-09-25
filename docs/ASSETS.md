@@ -21,8 +21,31 @@
 | P1 | 夜空放飞背景（西湖山影+满月+孔明灯） | 竖版 ≥1000×1600 | fly 章节背景 |
 | P2 | 鹈鹕头像/logo 小图 | 方图透明底 | favicon / credits 签名 |
 
-**统一 prompt 风格词**（供生成时保持一致）：
-`flat vector illustration, Chinese Mid-Autumn night, deep indigo blue sky, moonlight yellow glow, warm lantern, West Lake Hangzhou, clean shapes, no text, no watermark`
+**统一生成 prompt（可直接复制给 image 模型，中英任选）**
+
+**P0-1 主视觉·夜景鹈鹕骑车（横版 ≥1600×900）**
+- 中文：扁平矢量插画，中秋夜晚，一只白色大鹈鹕骑着深藏青色自行车在西湖边公路骑行，橙黄色大嘴，夜空深靛蓝缀星与金色满月，远山剪影、湖面月光倒影，路边暖黄灯笼，干净几何色块，画面左侧留夜空放标题，无文字、无水印
+- EN: flat vector illustration, a white pelican riding a deep navy bicycle along a lakeside road at Mid-Autumn night, Hangzhou West Lake, huge golden full moon in deep indigo starry sky, mountain silhouettes, moonlight reflection, warm lantern glow, clean geometric shapes, empty sky space on the left, no text, no watermark
+
+**P0-2 六张赏月点插画（方图 ≥800×800，风格统一）**
+统一后缀：`…, flat vector illustration, Mid-Autumn night, deep indigo sky #2F4C86, moonlight yellow #F7D964, clean shapes, square composition, no text, no watermark`
+
+| 站 | 主体描述（接在统一后缀前） |
+|---|---|
+| 平湖秋月 | 湖畔长廊与石拱桥，如镜湖面托起金色满月 |
+| 宝石山 | 山顶保俶塔剪影，俯瞰西湖与城灯 |
+| 三潭印月 | 湖中三座石塔，烛光从圆孔透出，水面倒影 |
+| 满陇桂雨 | 桂花树与山间石径，石桌茶盏 |
+| 吴山城隍阁 | 层层飞檐城隍阁，老城屋顶夜景 |
+| 钱塘江·城市阳台 | 现代城市天际线与灯光秀，江面倒影 |
+
+**P1-3 花灯特写（方图）**
+中式纸灯笼特写，暖黄光晕从灯内透出，贴剪纸玉兔与桂花，黄色流苏垂下，背景虚化圆月与桂树夜色，扁平矢量插画风，无文字、无水印
+
+**P1-4 放飞夜空背景（竖版 ≥1000×1600）**
+竖版扁平矢量插画，西湖群山黑色剪影之上是深靛蓝夜空与巨大金色满月，十余盏孔明灯缓缓升空，星空点点，顶部大面积留夜空，无文字、无水印
+
+**收到后放置目录**：`public/assets/`（建议命名 `hero-night.png`、`spot1.png`…`spot6.png`、`lantern.png`、`fly-bg.png`）
 
 ## 3. 代码程序化资产（无需图片）
 - Three.js 低多边形鹈鹕 + 自行车（开场动画本体）

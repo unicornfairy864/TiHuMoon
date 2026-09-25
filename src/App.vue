@@ -1,62 +1,126 @@
 <script setup>
-// Phase 1 基建占位：后续 Phase 2 接入章节状态机外壳
+import { computed } from 'vue'
+import { STAGES } from './scenes/stages.js'
+import { useStage } from './composables/useStage.js'
+import StagePlaceholder from './scenes/StagePlaceholder.vue'
+
+const {
+  currentId,
+  current,
+  currentIndex,
+  isFirst,
+  isLast,
+  progress,
+  showNav,
+  total,
+  next,
+  prev,
+} = useStage()
+
+const progressPercent = computed(() => `${Math.round(progress.value * 100)}%`)
+const isIntro = computed(() => currentId.value === 'intro3d')
 </script>
 
 <template>
-  <main class="boot">
-    <div class="moon"></div>
-    <h1>鹈鹕赏月 <span>TiHuMoon</span></h1>
-    <p>杭州中秋赏月指南 · 建设中</p>
-    <p class="hint">Phase 1 · 基础设施已完成（Vite + Vue 3 + Three.js）</p>
-  </main>
+  <div class="tm-shell" :class="{ 'tm-shell--intro': isIntro }">
+    <!-- 顶部：进度条 + 章节名（intro 隐藏） -->
+    <header v-if="!isIntro" class="tm-top">
+      <div class="tm-top__bar" role="progressbar" :aria-valuenow="currentIndex + 1" :aria-valuemax="total">
+        <i :style="{ width: progressPercent }"></i>
+      </div>
+      <div class="tm-top__meta">
+        <span class="tm-top__title">{{ current.title }}</span>
+        <span class="tm-top__count">{{ currentIndex + 1 }} / {{ total }}</span>
+      </div>
+    </header>
+
+    <!-- 章节内容：淡入淡出切换 -->
+    <Transition name="stage" mode="out-in">
+      <component :is="StagePlaceholder" :key="currentId" :stage="current" />
+    </Transition>
+
+    <!-- 底部导航：仅相邻线性移动 -->
+    <nav v-if="showNav" class="tm-nav">
+      <button class="tm-btn tm-btn--ghost" :disabled="isFirst" @click="prev">上一站</button>
+      <button class="tm-btn tm-btn--primary" :disabled="isLast" @click="next">下一站</button>
+    </nav>
+  </div>
 </template>
 
 <style scoped>
-.boot {
-  min-height: 100dvh;
+.tm-shell {
+  position: fixed;
+  inset: 0;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  text-align: center;
-  background: linear-gradient(180deg, var(--tm-night-deep), var(--tm-night-ink));
-  padding: var(--tm-safe-top) 24px calc(24px + var(--tm-safe-bottom));
+  background:
+    radial-gradient(ellipse 120% 60% at 50% -10%, rgb(47 76 134 / 0.55), transparent),
+    linear-gradient(180deg, var(--tm-night-deep), var(--tm-night-ink));
+  color: var(--tm-cream);
 }
 
-.moon {
-  width: 96px;
-  height: 96px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 35%, #fff7d6, var(--tm-moon) 60%, #e7bd3f);
-  box-shadow: 0 0 48px rgb(247 217 100 / 0.55);
-  margin-bottom: 24px;
+/* --- 顶部进度 --- */
+.tm-top {
+  padding: calc(var(--tm-safe-top) + 8px) 16px 6px;
+  flex: none;
 }
 
-h1 {
-  margin: 0;
-  font-size: 28px;
+.tm-top__bar {
+  height: 4px;
+  border-radius: var(--tm-radius-pill);
+  background: rgb(251 243 224 / 0.15);
+  overflow: hidden;
+}
+
+.tm-top__bar i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--tm-moon), var(--tm-orange));
+  transition: width 0.4s var(--tm-ease);
+}
+
+.tm-top__meta {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--tm-cloud);
+  opacity: 0.7;
+}
+
+.tm-top__title {
   letter-spacing: 2px;
   color: var(--tm-moon);
 }
 
-h1 span {
-  display: block;
-  font-size: 13px;
-  letter-spacing: 6px;
-  color: var(--tm-cloud);
-  opacity: 0.7;
-  font-family: var(--tm-font-ui);
+/* --- 底部导航 --- */
+.tm-nav {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  gap: 12px;
+  padding: 10px 16px calc(10px + var(--tm-safe-bottom));
+  background: linear-gradient(180deg, transparent, rgb(18 32 61 / 0.9) 40%);
 }
 
-p {
-  margin: 0;
-  color: var(--tm-cream);
-  opacity: 0.85;
+.tm-nav .tm-btn {
+  flex: 1;
 }
 
-.hint {
-  font-size: 13px;
-  opacity: 0.5;
+/* --- 横屏：压缩 --- */
+@media (orientation: landscape) and (max-height: 480px) {
+  .tm-top {
+    padding-top: calc(var(--tm-safe-top) + 4px);
+  }
+  .tm-top__meta {
+    margin-top: 3px;
+  }
+  .tm-nav {
+    padding-top: 6px;
+    padding-bottom: calc(6px + var(--tm-safe-bottom));
+  }
 }
 </style>

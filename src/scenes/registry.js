@@ -6,6 +6,8 @@ import Spot2 from './Spot2.vue'
 import Spot3 from './Spot3.vue'
 import Spot4 from './Spot4.vue'
 import Riddle from './Riddle.vue'
+import Science from './Science.vue'
+import Make from './Make.vue'
 
 // 章节 id -> 真实场景组件；未实装的章节回落到占位场景
 const MAP = {
@@ -16,6 +18,8 @@ const MAP = {
   spot3: Spot3,
   spot4: Spot4,
   riddle: Riddle,
+  science: Science,
+  make: Make,
 }
 
 export function resolveScene(id) {

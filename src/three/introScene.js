@@ -382,9 +382,9 @@ export function createIntro(canvas, { onFinish = () => {}, onTitle = () => {} } 
   // 三潭印月：三座石塔呈等边三角形立于湖面，旁侧泊一艘小篷船（西湖夜景氛围）
   const pagodaGlow = new THREE.MeshBasicMaterial({ color: C.glow, transparent: true, opacity: 0.85 })
   const TRI = [
-    [0.6, -11.2],
-    [3.6, -11.2],
-    [2.1, -13.8],
+    [-14.5, -11.5],
+    [-11.9, -11.5],
+    [-13.2, -9.2],
   ]
   TRI.forEach(([x, z], i) => {
     const p = buildPagoda(pagodaGlow)
@@ -393,11 +393,11 @@ export function createIntro(canvas, { onFinish = () => {}, onTitle = () => {} } 
     scene.add(p)
   })
 
-  // 湖面：椭圆（近岸 z≈-6 贴近公路、远岸 z≈-21，曲线边界收掉直线切边）
+  // 湖面：椭圆（近岸 z≈-6、远岸 z≈-21），整体偏左让三塔落在金线左侧
   const lake = new THREE.Mesh(new THREE.CircleGeometry(1, 72), new THREE.MeshLambertMaterial({ color: C.lake }))
   lake.rotation.x = -Math.PI / 2
   lake.scale.set(16, 7.5, 1)
-  lake.position.set(2.1, 0.03, -13.5)
+  lake.position.set(-1, 0.03, -13.5)
   scene.add(lake)
 
   // 湖面月光碎金
@@ -416,7 +416,7 @@ export function createIntro(canvas, { onFinish = () => {}, onTitle = () => {} } 
   // 小篷船泊在三塔旁
   const boat = buildBoat()
   boat.scale.setScalar(1.15)
-  boat.position.set(5.7, 0.04, -13)
+  boat.position.set(-15.5, 0.04, -12.5)
   boat.rotation.y = -0.32
   scene.add(boat)
 

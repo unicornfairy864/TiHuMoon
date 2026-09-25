@@ -25,6 +25,9 @@ const C = {
   wood: 0x6b4a2e,
   mat: 0x8a7550,
   glow: 0xffe9a8,
+  leaf: 0x2f6b47,
+  leaf2: 0x24523a,
+  leafDeep: 0x1a3d2e,
 }
 
 // 两点之间生成一根圆杆（车架 / 腿）
@@ -169,6 +172,30 @@ function buildRider() {
   return { group, wheels: [rear, front], crank, legs }
 }
 
+// 远岸树林：球簇树冠 + 细树干（葱郁氛围，随远山慢速视差）
+function buildTree(tint) {
+  const g = new THREE.Group()
+  const trunk = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.05, 0.08, 0.6, 6),
+    new THREE.MeshLambertMaterial({ color: C.wood })
+  )
+  trunk.position.y = 0.3
+  g.add(trunk)
+  const leafMat = new THREE.MeshLambertMaterial({ color: tint })
+  for (const [x, y, z, r] of [
+    [0, 0.95, 0, 0.44],
+    [-0.3, 0.8, 0.05, 0.3],
+    [0.3, 0.82, -0.05, 0.33],
+    [0.05, 1.26, 0, 0.26],
+  ]) {
+    const blob = new THREE.Mesh(new THREE.SphereGeometry(r, 10, 8), leafMat)
+    blob.position.set(x, y, z)
+    blob.scale.y = 0.9
+    g.add(blob)
+  }
+  return g
+}
+
 // 三潭印月石塔：瓶形、中空、周开五圆孔（现存塔为明天启元年补立，高 2 米许），
 // 三塔呈等边三角形立于湖面；塔内点烛、洞口蒙纸 → 暖光圆孔（资料：CCTV《三潭印月》）
 function buildPagoda(glowMat) {
@@ -264,7 +291,7 @@ export function createIntro(canvas, { onFinish = () => {}, onTitle = () => {} } 
 
   const scene = new THREE.Scene()
   scene.background = new THREE.Color(0x12203d)
-  scene.fog = new THREE.Fog(0x12203d, 16, 48)
+  scene.fog = new THREE.Fog(0x12203d, 16, 60)
 
   const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 140)
 
@@ -328,15 +355,28 @@ export function createIntro(canvas, { onFinish = () => {}, onTitle = () => {} } 
     scrollables.push({ obj: post, speed: 9, span: 50 })
   }
 
-  // 远山（慢速视差）
+  // 远山（慢速视差，退到湖对岸之后）
   const hillMat = new THREE.MeshLambertMaterial({ color: C.hill })
   for (let i = -4; i <= 4; i++) {
     const hill = new THREE.Mesh(new THREE.SphereGeometry(1, 16, 12), hillMat)
     const s = 2.6 + Math.abs(Math.sin(i * 2.3)) * 3.2
     hill.scale.set(s, s * 0.6, 1)
-    hill.position.set(i * 6.5, 0, -16 - (i % 3))
+    hill.position.set(i * 6.5, 0, -24 - (Math.abs(i) % 3))
     scene.add(hill)
     scrollables.push({ obj: hill, speed: 1.6, span: 58 })
+  }
+
+  // 湖对岸树林：错落两排、三色深浅（葱郁氛围，慢速视差）
+  for (let i = 0; i < 16; i++) {
+    const tree = buildTree(i % 3 === 0 ? C.leafDeep : i % 3 === 1 ? C.leaf : C.leaf2)
+    tree.position.set(
+      -26 + i * 3.4 + Math.sin(i * 1.7) * 1.1,
+      0,
+      -20.8 - (i % 2) * 1.7 - Math.abs(Math.sin(i * 2.3)) * 0.7
+    )
+    tree.scale.setScalar(0.85 + Math.abs(Math.sin(i * 2.9)) * 0.75)
+    scene.add(tree)
+    scrollables.push({ obj: tree, speed: 2.2, span: 80 })
   }
 
   // 三潭印月：三座石塔呈等边三角形立于湖面，旁侧泊一艘小篷船（西湖夜景氛围）
@@ -353,9 +393,9 @@ export function createIntro(canvas, { onFinish = () => {}, onTitle = () => {} } 
     scene.add(p)
   })
 
-  const lake = new THREE.Mesh(new THREE.PlaneGeometry(30, 9), new THREE.MeshLambertMaterial({ color: C.lake }))
+  const lake = new THREE.Mesh(new THREE.PlaneGeometry(30, 12), new THREE.MeshLambertMaterial({ color: C.lake }))
   lake.rotation.x = -Math.PI / 2
-  lake.position.set(2.1, 0.03, -10.9)
+  lake.position.set(2.1, 0.03, -14)
   scene.add(lake)
 
   // 湖面月光碎金
@@ -374,7 +414,7 @@ export function createIntro(canvas, { onFinish = () => {}, onTitle = () => {} } 
   // 小篷船泊在三塔旁
   const boat = buildBoat()
   boat.scale.setScalar(1.15)
-  boat.position.set(5.7, 0.04, -8.5)
+  boat.position.set(5.7, 0.04, -11.5)
   boat.rotation.y = -0.32
   scene.add(boat)
 

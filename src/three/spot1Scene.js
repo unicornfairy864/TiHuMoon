@@ -186,11 +186,22 @@ export function createSpot1(canvas, opts = {}) {
   boat.rotation.y = 0.5
   scene.add(boat)
 
-  // —— 相机：静止 + 极缓慢漂移 ——
+  // —— 相机：静止 + 极缓慢漂移；窄屏时后拉+左移聚焦主体 ——
   const BASE = new THREE.Vector3(0, 2.3, 10)
   const LOOK = new THREE.Vector3(0, 2.0, -8)
-  camera.position.copy(BASE)
-  camera.lookAt(LOOK)
+
+  // 竖屏取景：长宽比越窄 → 相机后撤抬高、注视点向主体簇（船/长堤/荷叶）偏移，
+  // 配合 fitFov 拉宽竖向 fov，保证近景不被切出画面、主体居中
+  function frame() {
+    fitFov(camera, 50, { maxFov: 82 })
+    const a = camera.aspect || 1
+    const t = a >= 1 ? 0 : Math.min(1, (1 - a) / 0.55) // a≤0.45 时 t=1（最大修正）
+    BASE.set(-1.4 * t, 2.3 + 0.6 * t, 10 + 6 * t)
+    LOOK.set(-1.4 * t, 2.0 + 0.35 * t, -8)
+    camera.position.copy(BASE)
+    camera.lookAt(LOOK)
+  }
+  frame()
 
   // —— 主循环 ——
   const reduced = prefersReducedMotion()
@@ -232,10 +243,9 @@ export function createSpot1(canvas, opts = {}) {
   }
 
   const unbind = bindResize(canvas, renderer, camera, () => {
-    fitFov(camera, 50)
+    frame() // 重算竖屏取景（fov + 相机位）
     if (reduced) renderOnce()
   })
-  fitFov(camera, 50)
 
   return {
     dispose() {

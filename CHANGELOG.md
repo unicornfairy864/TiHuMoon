@@ -15,6 +15,9 @@
 - `scripts/convert_data.py`（`npm run convert` 可重跑）
 - 首页占位组件 `App.vue`（月亮渐变 + 标题）
 
+### Changed
+- `docs/CONTENT.md`：credits 署名确认为「计算机基拔尖基地班-红叶」
+
 ### Notes
 - 灯谜章节仅保留用户原稿 JHWL 一条，三选项全对 + 礼盒 gag
 - 三张参考图仅作风格参考，不直接上站（见 `docs/ASSETS.md` 版权红线）

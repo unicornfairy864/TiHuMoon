@@ -89,8 +89,8 @@
 - [x] 按钮：「再放一盏」（随机再放一条）/「去看看大家的 →」进 credits
 - [x] `Credits.vue`：署名计算机基拔尖基地班-红叶 + 资料/数据鸣谢（**结尾不设「重新开始」**，2026-09-25 决定）
 
-### Phase 8 打磨 — ⬜ 未开始
-- [ ] 霞鹜文楷 woff2 嵌入（`font-display: swap`）
+### Phase 8 打磨 — 🔄 进行中
+- [x] 霞鹜文楷子集嵌入：`scripts/subset_font.mjs`（`npm run subset-font`，`subset-font` devDep）—— 1408 字符（src 全文案+400 条数据+ASCII+标点），**24.4MB → 309KB woff2**，`@font-face` + `font-display: swap`
 - [ ] 动效/性能/横屏/安全区回归
 - [x] ~~（可选）音频：BGM~~ → BGM 播放器已实装（`06c0646`）；音效仍可选
 

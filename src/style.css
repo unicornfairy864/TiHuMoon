@@ -3,6 +3,16 @@
  * 配色参考：图3 夜景色系（夜空蓝+月光黄）、图2 灯笼暖光（仅作参考，均已自定值）
  * ============================================================ */
 
+/* 霞鹜文楷子集（scripts/subset_font.mjs 生成，1408 字符 ≈309KB）
+ * font-display: swap —— 加载期回退系统楷体，不阻塞渲染 */
+@font-face {
+  font-family: 'LXGW WenKai';
+  src: url('/assets/fonts/lxgw-wenkai-subset.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   /* --- 夜色主调 --- */
   --tm-night: #2f4c86; /* 夜空蓝（主背景） */
@@ -28,7 +38,7 @@
   --tm-success: #7fc8a9;
   --tm-danger: #e06a5b;
 
-  /* --- 字体（Phase 8 嵌入霞鹜文楷，先系统栈兜底） --- */
+  /* --- 字体：霞鹜文楷子集已嵌入（@font-face，Phase 8 2026-09-25），系统楷体兜底 --- */
   --tm-font: 'LXGW WenKai', '霞鹜文楷', 'LXGW WenKai Screen', 'Kaiti SC', 'STKaiti',
     'KaiTi', 'Noto Serif SC', serif;
   --tm-font-ui: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'HarmonyOS Sans SC',

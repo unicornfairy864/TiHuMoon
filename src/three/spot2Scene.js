@@ -14,6 +14,8 @@ import {
   buildStars,
   buildWater,
   buildStreaks,
+  buildMoonGlade,
+  buildGlints,
   buildTree,
   buildBoat,
   buildGlowSprite,
@@ -91,8 +93,24 @@ export function createSpot2(canvas, opts = {}) {
   const moon = buildMoon({ radius: 3.4, pos: [1.2, 14, -84], warm: true })
   scene.add(moon.group)
 
-  // —— 湖面（山脚至城市脚下）——
-  scene.add(buildWater({ w: 260, d: 100, color: C.lakeDeep, z: -42 }))
+  // —— 湖面（山脚至城市脚下）：亮一档湖蓝，让城市前的水域一眼可辨 ——
+  scene.add(buildWater({ w: 260, d: 100, color: C.lake, z: -42 }))
+
+  // 城市前的暖月光水道：从崖下一路铺到楼群脚下（橙月倒影）
+  const glade = buildMoonGlade({ x: 1.2, zNear: 4, zFar: -74, width: 4.6, count: 30, color: C.moonSoft })
+  scene.add(glade.group)
+
+  // 湖面横向波光（散布城市前的水域，强化"这是一片湖"的质感）
+  const lakeGlints = buildGlints({
+    spots: [
+      [-10, -30, 2.6], [7, -34, 3.2], [-4, -39, 2.2], [13, -42, 3.6],
+      [-14, -44, 3.0], [3, -30, 2.0], [-7, -48, 3.4], [10, -46, 2.6],
+      [0, -51, 4.2], [-12, -37, 2.4], [16, -38, 2.8], [-2, -33, 1.8],
+    ],
+    color: C.moonSoft,
+    opacity: 0.1,
+  })
+  scene.add(lakeGlints.group)
 
   // —— 城市天际线：远排剪影 + 主排亮窗楼 + 近排裙楼 ——
   const neonMats = []
@@ -263,6 +281,9 @@ export function createSpot2(canvas, opts = {}) {
     }
     for (const s of streaks.streaks) s.mat.opacity = 0.1 + 0.07 * (0.5 + 0.5 * Math.sin(t * 1.2 + s.phase))
     for (const s of boatTrail.streaks) s.mat.opacity = 0.09 + 0.06 * (0.5 + 0.5 * Math.sin(t * 1.5 + s.phase))
+    // 湖面月光水道与波光随波明灭
+    for (const d of glade.dashes) d.mat.opacity = 0.16 + 0.12 * (0.5 + 0.5 * Math.sin(t * 1.3 + d.phase))
+    for (const d of lakeGlints.dashes) d.mat.opacity = 0.08 + 0.09 * (0.5 + 0.5 * Math.sin(t * 1.1 + d.phase))
     boat.position.y = 0.05 + Math.sin(t * 1.0) * 0.025
     boat.rotation.z = Math.sin(t * 0.7) * 0.02
     camera.position.set(BASE.x + Math.sin(t * 0.12) * 0.18, BASE.y + Math.sin(t * 0.09) * 0.06, BASE.z)

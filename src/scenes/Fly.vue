@@ -36,7 +36,8 @@ function pickPair() {
 
 function launch({ name, wish, mine = false }) {
   if (lanterns.value.length >= 5) return // 同屏最多 5 盏
-  const dur = (mine ? 10.5 : 7.5) + Math.random() * 2.5 // mine 更慢
+  // 升空更快：普通 5~6.8s，用户盏 7~9s（仍比预存慢一档）
+  const dur = (mine ? 7 : 5) + Math.random() * (mine ? 2 : 1.8)
   const x = 8 + Math.random() * 72 // 8% ~ 80%
   const l = {
     id: nextId++,
@@ -80,9 +81,24 @@ function oneMore() {
 
 const mineFlying = computed(() => lanterns.value.some((l) => l.mine && l.show))
 
-onMounted(startSequence)
+// 定时自动飘：全程每 5.2s 检查一次，同屏 <4 盏时自动放一盏随机
+// 预存祝福（初始 5 盏序列占位时自然跳过，用户盏必占一席）
+let ambient = null
+
+function startAmbient() {
+  ambient = setInterval(() => {
+    if (lanterns.value.length < 4) launch(pickPair())
+  }, 5200)
+}
+
+onMounted(() => {
+  startSequence()
+  startAmbient()
+})
+
 onUnmounted(() => {
   clearTimeout(seqTimer)
+  clearInterval(ambient)
   timers.forEach(clearTimeout)
 })
 </script>

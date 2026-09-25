@@ -46,7 +46,7 @@ function launch({ name, wish, mine = false }) {
     mine,
     show: false,
     x,
-    h: 62 + Math.random() * 24, // 上升高度 62%~86% 视口高
+    h: 62 + Math.random() * 24, // 最终高度：距屏幕底 62%~86% 视口高（飞到天上）
     dur,
     style: { left: `${x}%`, bottom: '-14%', transitionDuration: `${dur}s` },
   }
@@ -54,7 +54,7 @@ function launch({ name, wish, mine = false }) {
   // 双 rAF 后抬升（确保初始位渲染过一帧；left 已定，只动 bottom）
   requestAnimationFrame(() =>
     requestAnimationFrame(() => {
-      l.style.bottom = `${100 - l.h}%`
+      l.style.bottom = `${l.h}%`
     })
   )
   const hold = (mine ? 4.5 : 3.5) + Math.random() // 悬停展示昵称+祝福

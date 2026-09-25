@@ -8,7 +8,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "convert": "python scripts/convert_data.py"
+    "convert": "python scripts/convert_data.py",
+    "photo": "python scripts/analyze_photo.py"
   },
   "license": "MIT",
   "dependencies": {

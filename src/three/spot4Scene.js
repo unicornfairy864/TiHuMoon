@@ -38,7 +38,8 @@ export function createSpot4(canvas, opts = {}) {
 
   // —— 天空：星 + 巨月（悬于阁后，参考图3 构图）——
   scene.add(buildStars({ count: 110, spread: 80, yMin: 8, yMax: 30, zMin: 26, zMax: 60 }))
-  const moon = buildMoon({ radius: 3.2, pos: [0, 8.4, -13], warm: true })
+  // 巨月悬于阁后：中心在阁顶（尖顶 y≈6）上方约 1/3 塔身处，抬头见月
+  const moon = buildMoon({ radius: 3.2, pos: [0, 13, -13], warm: true })
   scene.add(moon.group)
 
   // —— 地面 + 吴山山体 ——

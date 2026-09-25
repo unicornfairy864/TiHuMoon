@@ -127,11 +127,11 @@ onUnmounted(() => {
   box-shadow: 0 0 48px rgb(247 217 100 / 0.5);
 }
 
-/* 右上角小字「跳过」：抬高避开手机状态栏 */
+/* 右上角小字「跳过」：紧贴安全区顶部，不留空行 */
 .intro__skip {
   position: absolute;
   right: 12px;
-  top: calc(var(--tm-safe-top) + 36px);
+  top: var(--tm-safe-top);
   min-height: 32px;
   padding: 6px 12px;
   font-size: 12px;

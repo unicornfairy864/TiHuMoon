@@ -179,7 +179,6 @@ export function createIntro(canvas, { onFinish = () => {} } = {}) {
   scene.fog = new THREE.Fog(0x12203d, 16, 48)
 
   const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 140)
-  camera.position.set(0, 2.3, 11)
 
   // 灯光
   scene.add(new THREE.AmbientLight(0xffffff, 1.15))
@@ -256,6 +255,20 @@ export function createIntro(canvas, { onFinish = () => {} } = {}) {
   const rider = buildRider()
   scene.add(rider.group)
 
+  // —— 电影运镜：后 → 右侧 → 前，远 → 近 → 远 ——
+  // az: 相机方位角（-90=正后方, 0=骑手右侧+Z, 90=正前方）; el: 仰角; d: 基准距离;
+  // v/h: 竖/横方向必须完整入画的半幅，用于按屏幕比例推最小距离
+  const TARGET = new THREE.Vector3(0.1, 1.85, 0)
+  const KEYS = [
+    { az: -90, el: 0.34, d: 9.5, v: 1.9, h: 0.7 }, // 后方·远（略俯）
+    { az: -45, el: 0.2, d: 7.0, v: 1.8, h: 1.6 }, // 后右 45°
+    { az: 0, el: 0.06, d: 4.8, v: 1.4, h: 2.3 }, // 正右侧·近（贴地）
+    { az: 45, el: 0.14, d: 7.5, v: 1.8, h: 1.6 }, // 前右 45°
+    { az: 90, el: 0.26, d: 11, v: 1.9, h: 0.8 }, // 正前方·远（拉出）
+  ]
+  let cameraPath = null
+  const tmpPos = new THREE.Vector3()
+
   // 自适应取景（竖屏也能装下）
   function resize() {
     const w = canvas.clientWidth || window.innerWidth
@@ -264,19 +277,30 @@ export function createIntro(canvas, { onFinish = () => {} } = {}) {
     renderer.setSize(w, h, false)
     const aspect = w / h
     camera.aspect = aspect
-    const fitZ = 2.9 / (Math.tan((camera.fov * Math.PI) / 360) * aspect)
-    camera.position.z = Math.max(10.5, fitZ)
     camera.updateProjectionMatrix()
+
+    // 竖屏水平可视窄 → 自动把关键帧推远，保证骑手完整入画
+    const tanH = Math.tan((camera.fov * Math.PI) / 360)
+    const pts = KEYS.map((k) => {
+      const dist = Math.max(k.d, k.v / tanH, k.h / (tanH * aspect))
+      const az = (k.az * Math.PI) / 180
+      return new THREE.Vector3(
+        TARGET.x + dist * Math.sin(az) * Math.cos(k.el),
+        TARGET.y + dist * Math.sin(k.el),
+        TARGET.z + dist * Math.cos(az) * Math.cos(k.el)
+      )
+    })
+    cameraPath = new THREE.CatmullRomCurve3(pts, false, 'catmullrom', 0.5)
   }
   resize()
   window.addEventListener('resize', resize)
 
-  // 主循环：6.5s 后回调 onFinish（由 Vue 侧执行切换章节）
+  // 主循环：7.2s 电影运镜后回调 onFinish（由 Vue 侧执行切换章节）
   const clock = new THREE.Clock()
   let raf = 0
   let elapsed = 0
   let done = false
-  const DURATION = 6.5
+  const DURATION = 7.2
 
   function frame() {
     raf = requestAnimationFrame(frame)
@@ -296,8 +320,12 @@ export function createIntro(canvas, { onFinish = () => {} } = {}) {
     rider.legs.rotation.z = Math.sin(elapsed * 6) * 0.07
     rider.group.position.y = Math.sin(elapsed * 9) * 0.025
 
-    camera.position.x = Math.sin(elapsed * 0.6) * 0.4
-    camera.lookAt(0, 1.7, 0)
+    // 样条运镜：后→右侧→前，远→近→远；余弦缓动（首尾慢、中段快）
+    const p = Math.min(elapsed / DURATION, 1)
+    const eased = 0.5 - 0.5 * Math.cos(p * Math.PI)
+    cameraPath.getPoint(eased, tmpPos)
+    camera.position.copy(tmpPos)
+    camera.lookAt(TARGET)
 
     renderer.render(scene, camera)
 

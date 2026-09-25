@@ -325,6 +325,7 @@ export function createIntro(canvas, { onFinish = () => {}, onTitle = () => {} } 
   ground.position.y = -0.02
   const road = new THREE.Mesh(new THREE.PlaneGeometry(180, 3.6), new THREE.MeshLambertMaterial({ color: C.road }))
   road.rotation.x = -Math.PI / 2
+  road.position.z = -2 // 与骑手同车道（骑手 z=-2）
   scene.add(ground, road)
 
   // 循环滚动的元素 { obj, speed, span }
@@ -335,7 +336,7 @@ export function createIntro(canvas, { onFinish = () => {}, onTitle = () => {} } 
   for (let i = -5; i <= 5; i++) {
     const dash = new THREE.Mesh(new THREE.PlaneGeometry(1.1, 0.14), lineMat)
     dash.rotation.x = -Math.PI / 2
-    dash.position.set(i * 4, 0.02, 0)
+    dash.position.set(i * 4, 0.02, -2)
     scene.add(dash)
     scrollables.push({ obj: dash, speed: 9, span: 44 })
   }
@@ -350,7 +351,7 @@ export function createIntro(canvas, { onFinish = () => {}, onTitle = () => {} } 
     const lamp = new THREE.Mesh(new THREE.SphereGeometry(0.2, 12, 12), lampMat)
     lamp.position.y = 1.95
     post.add(pole, lamp)
-    post.position.set(i * 7, 0, 2.7)
+    post.position.set(i * 7, 0, 0.7) // 路移至 z=-2，保持路边相对距离
     scene.add(post)
     scrollables.push({ obj: post, speed: 9, span: 50 })
   }

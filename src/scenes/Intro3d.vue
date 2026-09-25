@@ -167,12 +167,18 @@ onUnmounted(() => {
   transition: transform 0.45s var(--tm-ease);
 }
 
-/* 右半屏列：标题保持垂直居中，结束页按钮悬在其下方 */
+/* 右半屏整体块：标题 + 结束页按钮作为一个整体，垂直居中（占右 50%） */
 .intro__side {
   position: absolute;
-  right: 5%;
+  right: 0;
   top: 50%;
   transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: clamp(14px, 3vh, 28px);
+  width: 50vw;
+  padding: clamp(16px, 3vh, 32px) clamp(16px, 4vw, 40px); /* 四周留白，块不贴边 */
 }
 
 .intro__chars {
@@ -197,15 +203,12 @@ onUnmounted(() => {
   transition-delay: calc(0.15s + var(--i) * 0.14s);
 }
 
-/* 结束页：动画结束后自动浮现的开始按钮（首次「开始夜游」；有存档「继续上次/重新开始」） */
+/* 结束页：动画结束后自动浮现的开始按钮（块内流式排列，宽度随整块） */
 .intro__cta {
-  position: absolute;
-  top: calc(100% + clamp(14px, 3vh, 28px));
-  right: 0;
   display: flex;
   flex-direction: column;
   gap: 10px;
-  width: 45vw; /* 占右边 50%：右缘在屏幕 95%（side right:5%），左缘正好 50% */
+  width: 100%;
   pointer-events: none;
   opacity: 0;
   visibility: hidden;
@@ -235,9 +238,13 @@ onUnmounted(() => {
 
 /* 横屏矮屏：压缩结束页按钮 */
 @media (orientation: landscape) and (max-height: 480px) {
+  .intro__side {
+    gap: 8px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
   .intro__cta {
     gap: 6px;
-    width: 45vw;
   }
   .intro__cta .tm-btn {
     min-height: 32px;

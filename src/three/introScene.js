@@ -372,7 +372,7 @@ export function createIntro(canvas, { onFinish = () => {}, onTitle = () => {} } 
     tree.position.set(
       -26 + i * 3.4 + Math.sin(i * 1.7) * 1.1,
       0,
-      -20.8 - 1.6 - (i % 2) * 1.7 - Math.abs(Math.sin(i * 2.3)) * 0.7
+      -20.4 - (i % 2) * 1.7 - Math.abs(Math.sin(i * 2.3)) * 0.7
     )
     tree.scale.setScalar(0.85 + Math.abs(Math.sin(i * 2.9)) * 0.75)
     scene.add(tree)
@@ -382,9 +382,9 @@ export function createIntro(canvas, { onFinish = () => {}, onTitle = () => {} } 
   // 三潭印月：三座石塔呈等边三角形立于湖面，旁侧泊一艘小篷船（西湖夜景氛围）
   const pagodaGlow = new THREE.MeshBasicMaterial({ color: C.glow, transparent: true, opacity: 0.85 })
   const TRI = [
-    [-14.5, -11.5],
-    [-11.9, -11.5],
-    [-13.2, -9.2],
+    [-14.5, -9.5],
+    [-11.9, -9.5],
+    [-13.2, -7.2],
   ]
   TRI.forEach(([x, z], i) => {
     const p = buildPagoda(pagodaGlow)
@@ -397,15 +397,15 @@ export function createIntro(canvas, { onFinish = () => {}, onTitle = () => {} } 
   const lake = new THREE.Mesh(new THREE.CircleGeometry(1, 72), new THREE.MeshLambertMaterial({ color: C.lake }))
   lake.rotation.x = -Math.PI / 2
   lake.scale.set(16, 7.5, 1)
-  lake.position.set(-1, 0.03, -13.5)
+  lake.position.set(-1, 0.03, -11.5)
   scene.add(lake)
 
   // 湖面月光碎金
   const glintMat = new THREE.MeshBasicMaterial({ color: C.moon, transparent: true, opacity: 0.13, depthWrite: false })
   for (const [gx, gz, gw] of [
-    [0.9, -13.4, 3.2],
-    [4.6, -10.7, 2.2],
-    [-2.2, -11.7, 1.6],
+    [0.9, -11.4, 3.2],
+    [4.6, -8.7, 2.2],
+    [-2.2, -9.7, 1.6],
   ]) {
     const glint = new THREE.Mesh(new THREE.PlaneGeometry(gw, 0.09), glintMat)
     glint.rotation.x = -Math.PI / 2
@@ -416,18 +416,19 @@ export function createIntro(canvas, { onFinish = () => {}, onTitle = () => {} } 
   // 小篷船泊在三塔旁
   const boat = buildBoat()
   boat.scale.setScalar(1.15)
-  boat.position.set(-15.5, 0.04, -12.5)
+  boat.position.set(-15.5, 0.04, -10.5)
   boat.rotation.y = -0.32
   scene.add(boat)
 
-  // 鹈鹕骑手
+  // 鹈鹕骑手（后移 2，避开左侧景观被挡）
   const rider = buildRider()
+  rider.group.position.z = -2
   scene.add(rider.group)
 
   // —— 电影运镜：后 → 右侧 → 前，远 → 近 → 远 ——
   // az: 相机方位角（-90=正后方, 0=骑手右侧+Z, 90=正前方）; el: 仰角; d: 基准距离;
   // v/h: 竖/横方向必须完整入画的半幅，用于按屏幕比例推最小距离
-  const TARGET = new THREE.Vector3(0.1, 1.85, 0)
+  const TARGET = new THREE.Vector3(0.1, 1.85, -2) // 骑手后移，景观相对靠前
   const KEYS = [
     { az: -90, el: 0.34, d: 9.5, v: 1.9, h: 0.7 }, // 后方·远（略俯）
     { az: -45, el: 0.2, d: 7.0, v: 1.8, h: 1.6 }, // 后右 45°

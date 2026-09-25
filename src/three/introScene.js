@@ -361,7 +361,7 @@ export function createIntro(canvas, { onFinish = () => {}, onTitle = () => {} } 
     const hill = new THREE.Mesh(new THREE.SphereGeometry(1, 16, 12), hillMat)
     const s = 2.6 + Math.abs(Math.sin(i * 2.3)) * 3.2
     hill.scale.set(s, s * 0.6, 1)
-    hill.position.set(i * 6.5, 0, -24 - (Math.abs(i) % 3))
+    hill.position.set(i * 6.5, 0, -26 - (Math.abs(i) % 3))
     scene.add(hill)
     scrollables.push({ obj: hill, speed: 1.6, span: 58 })
   }
@@ -372,7 +372,7 @@ export function createIntro(canvas, { onFinish = () => {}, onTitle = () => {} } 
     tree.position.set(
       -26 + i * 3.4 + Math.sin(i * 1.7) * 1.1,
       0,
-      -20.8 - (i % 2) * 1.7 - Math.abs(Math.sin(i * 2.3)) * 0.7
+      -20.8 - 1.6 - (i % 2) * 1.7 - Math.abs(Math.sin(i * 2.3)) * 0.7
     )
     tree.scale.setScalar(0.85 + Math.abs(Math.sin(i * 2.9)) * 0.75)
     scene.add(tree)
@@ -382,9 +382,9 @@ export function createIntro(canvas, { onFinish = () => {}, onTitle = () => {} } 
   // 三潭印月：三座石塔呈等边三角形立于湖面，旁侧泊一艘小篷船（西湖夜景氛围）
   const pagodaGlow = new THREE.MeshBasicMaterial({ color: C.glow, transparent: true, opacity: 0.85 })
   const TRI = [
-    [0.6, -9.6],
-    [3.6, -9.6],
-    [2.1, -12.2],
+    [0.6, -11.2],
+    [3.6, -11.2],
+    [2.1, -13.8],
   ]
   TRI.forEach(([x, z], i) => {
     const p = buildPagoda(pagodaGlow)
@@ -393,19 +393,19 @@ export function createIntro(canvas, { onFinish = () => {}, onTitle = () => {} } 
     scene.add(p)
   })
 
-  // 湖面：椭圆（近岸 z≈-4.5 贴近公路、远岸 z≈-19.5，曲线边界收掉直线切边）
+  // 湖面：椭圆（近岸 z≈-6 贴近公路、远岸 z≈-21，曲线边界收掉直线切边）
   const lake = new THREE.Mesh(new THREE.CircleGeometry(1, 72), new THREE.MeshLambertMaterial({ color: C.lake }))
   lake.rotation.x = -Math.PI / 2
   lake.scale.set(16, 7.5, 1)
-  lake.position.set(2.1, 0.03, -12)
+  lake.position.set(2.1, 0.03, -13.5)
   scene.add(lake)
 
   // 湖面月光碎金
   const glintMat = new THREE.MeshBasicMaterial({ color: C.moon, transparent: true, opacity: 0.13, depthWrite: false })
   for (const [gx, gz, gw] of [
-    [0.9, -11.9, 3.2],
-    [4.6, -9.2, 2.2],
-    [-2.2, -10.2, 1.6],
+    [0.9, -13.4, 3.2],
+    [4.6, -10.7, 2.2],
+    [-2.2, -11.7, 1.6],
   ]) {
     const glint = new THREE.Mesh(new THREE.PlaneGeometry(gw, 0.09), glintMat)
     glint.rotation.x = -Math.PI / 2
@@ -416,7 +416,7 @@ export function createIntro(canvas, { onFinish = () => {}, onTitle = () => {} } 
   // 小篷船泊在三塔旁
   const boat = buildBoat()
   boat.scale.setScalar(1.15)
-  boat.position.set(5.7, 0.04, -11.5)
+  boat.position.set(5.7, 0.04, -13)
   boat.rotation.y = -0.32
   scene.add(boat)
 

@@ -5,6 +5,7 @@
 ## [未发布 · 本次]
 
 ### Added
+- **Phase 5 灯谜实装**：`src/scenes/Riddle.vue` + `src/data/riddle.js`（JHWL 唯一一条，原稿逐字保留）——引导语/题目/三选项；点任一选项 → 翻牌「答对了！」→ 弹**礼盒**（弹跳+丝带）→ 点击拆开 → 礼物文案卡（西红柿 / 彦祖接电话 / 聚绘未来寄语）→ 收下；三份收齐出现「继续出发」进 science；已拆选项标 ✓ 可重温；registry 注册 `riddle`，遮罩 z30 不挡 BGM 按钮（z40）
 - **BGM 播放器**：`src/composables/useBgm.js` 单例（根目录 `bgm.mp3` 循环、音量 0.7、Vite 资源导入）；App 壳**左上角圆形音符按钮**——页面加载即出现、0.5s 聚焦提示（缩放+光环，reduced-motion 关闭），禁用态反斜杠划掉音符、启用态月光黄描边发光
 - 持久化：`tihumoon.bgm.enabled`（是否启用）+ `tihumoon.bgm.time`（进度，timeupdate 每 ≥2s/pause/pagehide 回写）；刷新后恢复进度并尝试续播，被自动播放策略拦截则静默回禁用态（存档保留）
 - credits「重新开始」`resetAll` 一并调用 `resetBgmState()`：停播、进度归零、删除两个 bgm 键（suppress 屏蔽 pause 事件回写）

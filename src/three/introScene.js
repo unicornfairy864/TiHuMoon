@@ -164,8 +164,21 @@ function buildRider() {
   return { group, wheels: [rear, front], crank, legs }
 }
 
+// 缓动：慢→快→慢
+function easeInOutCubic(t) {
+  return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2
+}
+
+// 时间 → 样条参数（速度编排）：
+// 0–4.2s 后方起步慢→加速→贴近侧拍时放慢；4.2–7.4s 侧面滑行加速到正前方并收住；7.4s 后保持
+function pathU(elapsed) {
+  if (elapsed <= 4.2) return 0.5 * easeInOutCubic(elapsed / 4.2)
+  if (elapsed <= 7.4) return 0.5 + 0.5 * easeInOutCubic((elapsed - 4.2) / 3.2)
+  return 1
+}
+
 // 创建 3D 开场；返回 dispose 函数，WebGL 不可用时返回 null
-export function createIntro(canvas, { onFinish = () => {} } = {}) {
+export function createIntro(canvas, { onFinish = () => {}, onTitle = () => {} } = {}) {
   let renderer
   try {
     renderer = new THREE.WebGLRenderer({ canvas, antialias: true })
@@ -264,10 +277,12 @@ export function createIntro(canvas, { onFinish = () => {} } = {}) {
     { az: -45, el: 0.2, d: 7.0, v: 1.8, h: 1.6 }, // 后右 45°
     { az: 0, el: 0.06, d: 4.8, v: 1.4, h: 2.3 }, // 正右侧·近（贴地）
     { az: 45, el: 0.14, d: 7.5, v: 1.8, h: 1.6 }, // 前右 45°
-    { az: 90, el: 0.26, d: 11, v: 1.9, h: 0.8 }, // 正前方·远（拉出）
+    { az: 55, el: 0.18, d: 10.5, v: 1.9, h: 1.6 }, // 右前方·远（鹈鹕居左，右半屏留给标题）
   ]
   let cameraPath = null
+  let lookPath = null
   const tmpPos = new THREE.Vector3()
+  const tmpLook = new THREE.Vector3()
 
   // 自适应取景（竖屏也能装下）
   function resize() {
@@ -291,16 +306,28 @@ export function createIntro(canvas, { onFinish = () => {} } = {}) {
       )
     })
     cameraPath = new THREE.CatmullRomCurve3(pts, false, 'catmullrom', 0.5)
+
+    // 注视点：末两帧向屏幕右偏移 → 鹈鹕落左半屏，右半屏留给「游中秋」
+    const PAN = [0, 0, 0, 0.25, 0.5] // 偏移占水平半幅的比例
+    const lookPts = pts.map((p, i) => {
+      const dir = new THREE.Vector3().subVectors(TARGET, p).normalize()
+      const right = new THREE.Vector3().crossVectors(dir, new THREE.Vector3(0, 1, 0)).normalize()
+      const pan = PAN[i] * tanH * p.distanceTo(TARGET) * aspect
+      return new THREE.Vector3().copy(TARGET).addScaledVector(right, pan)
+    })
+    lookPath = new THREE.CatmullRomCurve3(lookPts, false, 'catmullrom', 0.5)
   }
   resize()
   window.addEventListener('resize', resize)
 
-  // 主循环：7.2s 电影运镜后回调 onFinish（由 Vue 侧执行切换章节）
+  // 主循环：9.5s 速度编排（慢→快→侧拍放慢→前方保持）；7.4s 触发标题，9.5s 收尾
   const clock = new THREE.Clock()
   let raf = 0
   let elapsed = 0
   let done = false
-  const DURATION = 7.2
+  let titleFired = false
+  const DURATION = 9.5
+  const TITLE_AT = 7.4
 
   function frame() {
     raf = requestAnimationFrame(frame)
@@ -320,14 +347,18 @@ export function createIntro(canvas, { onFinish = () => {} } = {}) {
     rider.legs.rotation.z = Math.sin(elapsed * 6) * 0.07
     rider.group.position.y = Math.sin(elapsed * 9) * 0.025
 
-    // 样条运镜：后→右侧→前，远→近→远；余弦缓动（首尾慢、中段快）
-    const p = Math.min(elapsed / DURATION, 1)
-    const eased = 0.5 - 0.5 * Math.cos(p * Math.PI)
-    cameraPath.getPoint(eased, tmpPos)
+    const u = pathU(elapsed)
+    cameraPath.getPoint(u, tmpPos)
     camera.position.copy(tmpPos)
-    camera.lookAt(TARGET)
+    lookPath.getPoint(u, tmpLook)
+    camera.lookAt(tmpLook)
 
     renderer.render(scene, camera)
+
+    if (!titleFired && elapsed >= TITLE_AT) {
+      titleFired = true
+      onTitle()
+    }
 
     if (elapsed >= DURATION && !done) {
       done = true

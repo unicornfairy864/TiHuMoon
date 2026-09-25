@@ -6,8 +6,8 @@
 
 ### Phase 3 · 3D 开场（进行中）
 ### Added
-- `src/three/introScene.js` — Three.js 开场场景：程序化低多边形「鹈鹕骑车」（车轮/曲柄/蹬腿动画）+ 月亮星空 + 虚线/灯笼杆/远山三层视差滚动；**7.2s 电影运镜**（CatmullRom 样条：正后方远 → 右侧贴地近 → 正前方远，余弦缓动，竖/横屏自动换算机位距离）
-- `src/scenes/Intro3d.vue` — 开场组件：跳过按钮 + WebGL 降级占位（后续替换为动态 SVG 鹈鹕骑车）
+- `src/three/introScene.js` — Three.js 开场场景：程序化低多边形「鹈鹕骑车」+ 月亮星空 + 三层视差滚动；**9.5s 电影运镜**（CatmullRom 样条：正后方远 → 右侧贴地近 → 右前方远；速度编排 慢起→加速→侧拍放慢→滑至正面保持；7.4s 触发标题回调，注视点末段右移让鹈鹕居左半屏）
+- `src/scenes/Intro3d.vue` — 终幕标题卡：中央分割线 + 右半屏「游中秋」逐字弹出（月光黄，霞鹜文楷），WebGL 降级占位
 - `src/scenes/registry.js` — 章节 id → 场景组件注册表（未实装章节回落 StagePlaceholder）
 - `scripts/analyze_photo.py` + `npm run photo` — 实拍照片技术体检：亮度/天空方差/EXIF/亮斑候选（疑似月亮归一化坐标），输出 JSON 供配置月亮锚点（无视觉能力的验收方案）
 

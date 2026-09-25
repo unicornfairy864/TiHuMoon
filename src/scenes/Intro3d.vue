@@ -154,10 +154,10 @@ onUnmounted(() => {
   pointer-events: none;
 }
 
-/* 中央分割线（视觉左右分屏） */
+/* 金线分割：左区 61.8% / 右区 38.2%（黄金比） */
 .intro__divider {
   position: absolute;
-  left: 50%;
+  left: 61.8%;
   top: 14%;
   bottom: 14%;
   width: 2px;
@@ -177,7 +177,7 @@ onUnmounted(() => {
 
 .intro__chars {
   display: flex;
-  gap: clamp(6px, 2vw, 18px);
+  gap: clamp(6px, 1.6vw, 14px);
   font-family: var(--tm-font);
   color: var(--tm-moon);
   text-shadow:
@@ -186,7 +186,7 @@ onUnmounted(() => {
 }
 
 .intro__chars span {
-  font-size: min(13vw, 20vh);
+  font-size: min(9.5vw, 17vh); /* 右区仅 38.2% 宽，缩小以避免出格 */
   line-height: 1;
   font-weight: 700;
   opacity: 0;
@@ -205,7 +205,7 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  width: min(46vw, 260px);
+  width: min(33vw, 260px); /* 不越过金线 */
   pointer-events: none;
   opacity: 0;
   visibility: hidden;

@@ -32,7 +32,7 @@
 
 ## 5. 章节状态机（线性播放，无自由跳转）
 ```
-intro3d（结束页=首页） → map → spot1..spot6 → riddle → science → make → fly → credits
+intro3d（结束页=首页） → map → spot1..spot4 → riddle → science → make → fly → credits
 ```
 - 仅允许「下一章 / 上一章」相邻移动；首次进入按序推进
 - `tihumoon.progress` 记录当前章节 id，重开时在开场结束页询问「继续上次 / 重新开始」

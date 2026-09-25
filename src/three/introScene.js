@@ -382,9 +382,9 @@ export function createIntro(canvas, { onFinish = () => {}, onTitle = () => {} } 
   // 三潭印月：三座石塔呈等边三角形立于湖面，旁侧泊一艘小篷船（西湖夜景氛围）
   const pagodaGlow = new THREE.MeshBasicMaterial({ color: C.glow, transparent: true, opacity: 0.85 })
   const TRI = [
-    [-2.5, -9.5],
-    [-0.1, -9.5],
-    [-1.4, -7.2],
+    [-14.5, -9.5],
+    [-11.9, -9.5],
+    [-13.2, -7.2],
   ]
   TRI.forEach(([x, z], i) => {
     const p = buildPagoda(pagodaGlow)
@@ -465,7 +465,7 @@ export function createIntro(canvas, { onFinish = () => {}, onTitle = () => {} } 
     cameraPath = new THREE.CatmullRomCurve3(pts, false, 'catmullrom', 0.5)
 
     // 注视点：末两帧向屏幕右偏移 → 鹈鹕落左半屏，右半屏留给「游中秋」
-    const PAN = [0, 0, 0, 0.1, 0.15] // 偏移占水平半幅的比例（终幕金线在 61.8%）
+    const PAN = [0, 0, 0, 0.25, 0.5] // 偏移占水平半幅的比例
     const lookPts = pts.map((p, i) => {
       const dir = new THREE.Vector3().subVectors(TARGET, p).normalize()
       const right = new THREE.Vector3().crossVectors(dir, new THREE.Vector3(0, 1, 0)).normalize()

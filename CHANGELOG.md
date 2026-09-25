@@ -4,6 +4,9 @@
 
 ## [未发布 · 本次]
 
+### Changed
+- **结尾删除「重新开始」**：`Credits.vue` 移除按钮与 `resetAll` 引用，鸣谢即旅程终点（`resetAll`/`restartTour` 函数保留，暂无调用方）
+
 ### Added
 - **Phase 7 放飞与鸣谢**：`Fly.vue`（西湖山影 SVG+满月+46 星+水面月影；预存 4 组随机昵称祝福 2.6s 错峰升空、随机高度 62–86%、同屏 ≤5 盏、到顶悬停浮现昵称+祝福→淡出；**第 5 盏用户盏金色光环+慢速+停留更久**；「再放一盏」「去看看大家的」）+ `Credits.vue`（署名红叶、资料/数据鸣谢、重新开始 resetAll）；registry 注册 `fly`/`credits`——**11 章节全部实装**
 - **Phase 6 花灯三部曲**：`Science.vue`（高陵 6 工序横向 scroll-snap 卡片、竹/扎/糊/晾/染/饰字章图标、来源注脚）+ `Make.vue`（5 步向导、5 格进度、中央 CSS 灯笼随步骤进化：裁条纹→骨架→贴花→写字→待点亮；第 4 步昵称/祝福校验 + 🎲 抽一条祝福 + 存档，第 5 步点亮发光动画 + `tihumoon.made=1`）；registry 注册 `science`/`make`

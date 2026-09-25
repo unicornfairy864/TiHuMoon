@@ -1,10 +1,6 @@
 <script setup>
-// Phase 7b · credits：鸣谢（docs/CONTENT.md §13）
-// 「重新开始」→ resetAll：清 progress + BGM 状态，回开场动画
-import { useStage } from '../composables/useStage.js'
-
-const { resetAll } = useStage()
-
+// Phase 7b · credits：鸣谢收尾页（docs/CONTENT.md §13）
+// 结尾不设「重新开始」——旅程到此为止（2026-09-25 用户决定）
 const THANKS = [
   {
     title: '资料鸣谢',
@@ -41,9 +37,6 @@ const THANKS = [
       </ul>
     </div>
 
-    <button class="tm-btn tm-btn--primary cr__btn" type="button" @click="resetAll">
-      重新开始
-    </button>
     <p class="cr__end">但愿人长久，千里共婵娟 🌕</p>
   </section>
 </template>
@@ -134,11 +127,6 @@ const THANKS = [
   line-height: 1.7;
   color: var(--tm-cloud);
   opacity: 0.78;
-}
-
-.cr__btn {
-  margin-top: 6px;
-  min-width: 180px;
 }
 
 .cr__end {
